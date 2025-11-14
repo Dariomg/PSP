@@ -5,8 +5,8 @@ import java.util.Random;
 
 public class Animal extends Thread {
     private String nombre;
-    private int posicion = 0;
-    private int Final = 165;
+    private int metros = 0;
+    private int meta = 165;
     private int velocidad;
     private Semaphore tunel;
     private Random random = new Random();
@@ -14,7 +14,7 @@ public class Animal extends Thread {
     private boolean dormir = false;   
     private boolean volar = false;   
     private boolean interior = false;   
-    private int pasosDormir = 0;      
+    private int pasosAntesDeDormir = 0;      
 
     public Animal(String nombre, Semaphore tunel, int velocidad) {
         this.nombre = nombre;
@@ -25,14 +25,14 @@ public class Animal extends Thread {
     @Override
     public void run() {
         try {
-            while (posicion < Final) {
-                if (posicion >= 50 && posicion < 150 && !interior) {
+            while (metros < meta) {
+                if (metros >= 50 && metros < 150 && !interior) {
                     System.out.println(nombre + " LLEGO al tunel y espera.");
                     tunel.acquire();
                     interior = true;
                     System.out.println(nombre + " ha ENTRADO al tunel.");
                 }
-                if (posicion >= 150 && interior) {
+                if (metros >= 150 && interior) {
                     tunel.release();
                     interior = false;
                     System.out.println(nombre + " ha SALIDO del tunel.");
@@ -47,8 +47,8 @@ public class Animal extends Thread {
                 if (random.nextInt(20) == 0) {
                     viento();
                 }
-                if (posicion >= Final) {
-                    posicion = Final;
+                if (metros >= meta) {
+                	metros = meta;
                     System.out.println(nombre + " LLEGO al final.");
                     break;
                 }
@@ -60,24 +60,24 @@ public class Animal extends Thread {
 
     private void tortuga() throws InterruptedException {
         Thread.sleep(1000);
-        posicion += 2;
-        if (posicion > Final) posicion = Final;
-        System.out.println(nombre + " esta a " + posicion + " metros.");
+        metros += 2;
+        if (metros > meta) metros = meta;
+        System.out.println(nombre + " esta a " + metros + " metros.");
     }
 
     private void liebre() throws InterruptedException {
         if (interior) {
             dormir = false;
-            pasosDormir = 0;
+            pasosAntesDeDormir = 0;
         }
         if (!dormir) {
             Thread.sleep(1000);
-            posicion += 5;
-            pasosDormir++;
-            System.out.println(nombre + " esta a " + posicion + " metros.");
-            if (pasosDormir >= 4 && !interior) {
+            metros += 5;
+            pasosAntesDeDormir++;
+            System.out.println(nombre + " esta a " + metros + " metros.");
+            if (pasosAntesDeDormir >= 4 && !interior) {
                 dormir = true;
-                pasosDormir = 0;
+                pasosAntesDeDormir = 0;
                 System.out.println(nombre + " se durmio");
                 Thread.sleep(10000);
                 dormir = false;
@@ -94,16 +94,16 @@ public class Animal extends Thread {
             volar = true;
             boolean haciaAdelante = random.nextBoolean();
             int avance = haciaAdelante ? 10 : -10;
-            posicion += avance;
-            if (posicion < 0) posicion = 0;
+            metros += avance;
+            if (metros < 0) metros = 0;
             System.out.println(nombre + " vuela " + 
                 (haciaAdelante ? "hacia adelante" : "hacia atrás") + 
-                " y esta en el metro " + posicion);
+                " y esta en el metro " + metros);
         } else {
             volar = false;
-            posicion += 3;
-            if (posicion < 0) posicion = 0;
-            System.out.println(nombre + " camina en " + posicion + " metros.");
+            metros += 3;
+            if (metros < 0) metros = 0;
+            System.out.println(nombre + " camina en " + metros + " metros.");
         }
     }
 
@@ -111,17 +111,17 @@ public class Animal extends Thread {
         System.out.println("Viento");
         if (volar) {
             int efecto = random.nextInt(11) - 5;
-            posicion += efecto;
-            if (posicion < 0) posicion = 0;
+            metros += efecto;
+            if (metros < 0) metros = 0;
             String dir = efecto >= 0 ? "a favor" : "en contra";
             System.out.println(nombre + " vuela con viento " + dir + 
-                " y esta en el metro " + posicion + 
+                " y esta en el metro " + metros + 
                 " (" + (efecto >= 0 ? "+" : "") + efecto + " metros)");
         }
 
         if (nombre.equalsIgnoreCase("Liebre") && dormir && !interior) {
             dormir = false;
-            pasosDormir = 0;
+            pasosAntesDeDormir = 0;
             System.out.println(nombre + " se desperto por el viento.");
         }
     }
